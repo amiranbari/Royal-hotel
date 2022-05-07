@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/amiranbari/Royal-hotel/internal/config"
+	"github.com/amiranbari/Royal-hotel/internal/handlers"
 	"github.com/amiranbari/Royal-hotel/internal/renders"
 	"log"
 	"net/http"
@@ -15,7 +16,7 @@ const portNumber string = ":8000"
 var app config.AppConfig
 
 func main() {
-	app.InProduction = false
+	app.InProduction = true
 
 	/*
 		| make session manager and put it into app config
@@ -34,7 +35,10 @@ func main() {
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
+	app.UseCache = true
+
+	repo := handlers.NewRepo(&app)
+	handlers.NewHandlers(repo)
 
 	fmt.Println(fmt.Sprintf("starting application on port number %s", portNumber))
 
