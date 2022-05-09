@@ -31,3 +31,7 @@ func NewHandlers(r *Repository) {
 func (m *Repository) Index(rw http.ResponseWriter, r *http.Request) {
 	renders.Template(rw, r, "index.page.tmpl", &models.TemplateData{})
 }
+
+func (m *Repository) SearchForRoom(rw http.ResponseWriter, r *http.Request) {
+	
+}

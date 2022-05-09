@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/amiranbari/Royal-hotel/internal/config"
 	"github.com/amiranbari/Royal-hotel/internal/models"
+	"github.com/justinas/nosurf"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -57,6 +58,7 @@ func CreateTemplateCache() (config.TemplateCache, error) {
 }
 
 func AddDefaultData(td *models.TemplateData, r *http.Request) *models.TemplateData {
+	td.CSRFToken = nosurf.Token(r)
 	return td
 }
 

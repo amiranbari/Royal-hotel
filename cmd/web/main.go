@@ -15,14 +15,35 @@ import (
 const portNumber string = ":8000"
 
 var app config.AppConfig
+var session *scs.SessionManager
 
 func main() {
-	app.InProduction = true
+
+	db, err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.SQL.Close()
+
+	fmt.Println(fmt.Sprintf("starting application on port number %s", portNumber))
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: route(&app),
+	}
+
+	err = srv.ListenAndServe()
+
+	log.Fatal(err)
+}
+
+func run() (*driver.DB, error) {
+	app.InProduction = false
 
 	/*
 		| make session manager and put it into app config
 	*/
-	session := scs.New()
+	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
@@ -41,7 +62,7 @@ func main() {
 	//Make template cache
 	tc, err := renders.CreateTemplateCache()
 	if err != nil {
-		log.Fatal(err)
+		return db, err
 	}
 
 	app.TemplateCache = tc
@@ -51,14 +72,5 @@ func main() {
 	handlers.NewHandlers(repo)
 	renders.NewRenderer(&app)
 
-	fmt.Println(fmt.Sprintf("starting application on port number %s", portNumber))
-
-	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: route(&app),
-	}
-
-	err = srv.ListenAndServe()
-
-	log.Fatal(err)
+	return db, nil
 }
