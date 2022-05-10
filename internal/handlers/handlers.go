@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/amiranbari/Royal-hotel/internal/config"
 	"github.com/amiranbari/Royal-hotel/internal/driver"
+	"github.com/amiranbari/Royal-hotel/internal/forms"
 	"github.com/amiranbari/Royal-hotel/internal/models"
 	"github.com/amiranbari/Royal-hotel/internal/renders"
 	"github.com/amiranbari/Royal-hotel/internal/repository"
@@ -29,9 +30,26 @@ func NewHandlers(r *Repository) {
 }
 
 func (m *Repository) Index(rw http.ResponseWriter, r *http.Request) {
-	renders.Template(rw, r, "index.page.tmpl", &models.TemplateData{})
+	renders.Template(rw, r, "index.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+	})
 }
 
 func (m *Repository) SearchForRoom(rw http.ResponseWriter, r *http.Request) {
-	
+	err := r.ParseForm()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "form is not valid!")
+		http.Redirect(rw, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	form := forms.New(r.PostForm)
+	form.Required("start_date", "end_date")
+	if !form.Valid() {
+		renders.Template(rw, r, "index.page.tmpl", &models.TemplateData{
+			Form: form,
+		})
+		return
+	}
+
 }
