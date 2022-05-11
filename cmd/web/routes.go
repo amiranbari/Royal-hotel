@@ -16,7 +16,10 @@ func route(app *config.AppConfig) http.Handler {
 	mux.Use(SessionLoad)
 
 	mux.Get("/", handlers.Repo.Index)
-	mux.Post("/", handlers.Repo.SearchForRoom)
+	mux.Get("/search", handlers.Repo.SearchForRoom)
+	mux.Get("/choose-room/{id}", handlers.Repo.ChooseRoom)
+	mux.Get("/make-reservation", handlers.Repo.MakeReservation)
+	mux.Post("/make-reservation", handlers.Repo.PostReservation)
 
 	//static files
 	fileServer := http.FileServer(http.Dir("../../static"))

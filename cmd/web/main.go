@@ -1,14 +1,18 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/amiranbari/Royal-hotel/internal/config"
 	"github.com/amiranbari/Royal-hotel/internal/driver"
 	"github.com/amiranbari/Royal-hotel/internal/handlers"
+	"github.com/amiranbari/Royal-hotel/internal/helpers"
+	"github.com/amiranbari/Royal-hotel/internal/models"
 	"github.com/amiranbari/Royal-hotel/internal/renders"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -16,6 +20,8 @@ const portNumber string = ":8000"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 
@@ -38,18 +44,27 @@ func main() {
 }
 
 func run() (*driver.DB, error) {
+	//Say what we need to put in out session
+	gob.Register(models.Reservation{})
+
 	app.InProduction = false
 
 	/*
 		| make session manager and put it into app config
+
 	*/
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = app.InProduction
-
 	app.Session = session
+
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
 
 	//connect to database
 	log.Println("Connecting to database ...")
@@ -71,6 +86,7 @@ func run() (*driver.DB, error) {
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
 	renders.NewRenderer(&app)
+	helpers.NewHelpers(&app)
 
 	return db, nil
 }

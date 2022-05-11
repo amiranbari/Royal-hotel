@@ -12,7 +12,7 @@ type PostgresDBRepo struct {
 }
 
 func NewPostgresDBRepo(conn *sql.DB, app *config.AppConfig) repository.DatabaseRepo {
-	return PostgresDBRepo{
+	return &PostgresDBRepo{
 		App: app,
 		DB:  conn,
 	}

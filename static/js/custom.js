@@ -61,7 +61,7 @@
     
     $('select').niceSelect();
     $('#datetimepicker11,#datetimepicker1').datetimepicker({
-        format: 'yy-mm-dd'
+        format: 'yyyy-mm-dd'
     });
     
      /*---------gallery isotope js-----------*/
