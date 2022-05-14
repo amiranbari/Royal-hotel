@@ -37,6 +37,12 @@
                         </div>
                     {{end}}
 
+                    {{if ne (index .Flash) ""}}
+                        <div class="alert alert-success" role="alert">
+                            {{index .Flash}}
+                        </div>
+                    {{end}}
+
                     <div class="hotel_booking_table">
                         <div class="col-md-3">
                             <h2>Book <br> Your Room</h2>

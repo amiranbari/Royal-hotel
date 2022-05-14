@@ -2,7 +2,9 @@ package dbrepo
 
 import (
 	"context"
+	"errors"
 	"github.com/amiranbari/Royal-hotel/internal/models"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 )
 
@@ -111,4 +113,29 @@ func (m *PostgresDBRepo) InsertRoomRestriction(res models.RoomRestriction) error
 		return err
 	}
 	return nil
+}
+
+func (m *PostgresDBRepo) Authenticate(email, password string, accessLevel int) (int, string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var id int
+	var hashedPassword string
+
+	row := m.DB.QueryRowContext(ctx, "select id, password from users where email = $1 and access_level = $2", email, accessLevel)
+	err := row.Scan(&id, &hashedPassword)
+	if err != nil {
+		return 0, "", err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+
+	if err == bcrypt.ErrMismatchedHashAndPassword {
+		return 0, "", errors.New("incorrect password")
+	} else if err != nil {
+		return 0, "", err
+	}
+
+	return id, hashedPassword, nil
+
 }

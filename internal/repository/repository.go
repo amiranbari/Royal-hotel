@@ -10,4 +10,5 @@ type DatabaseRepo interface {
 	GetRoomById(id int) (models.Room, error)
 	InsertReservation(res models.Reservation) (int, error)
 	InsertRoomRestriction(res models.RoomRestriction) error
+	Authenticate(email, password string, accessLevel int) (int, string, error)
 }

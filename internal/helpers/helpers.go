@@ -21,6 +21,11 @@ func ClientError(rw http.ResponseWriter, status int) {
 
 func ServerError(rw http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n", debug.Stack())
+	app.ErrorLog.Println(err)
 	app.ErrorLog.Println(trace)
 	http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+}
+
+func IsUserAuthenticated(r *http.Request) bool {
+	return app.Session.Exists(r.Context(), "user_id")
 }
