@@ -30,6 +30,14 @@ func NewRepo(app *config.AppConfig, db *driver.DB) *Repository {
 	}
 }
 
+//NewTestRepo creates a new testing repository
+func NewTestRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		App: a,
+		DB:  dbrepo.NewTestingRepo(a),
+	}
+}
+
 func NewHandlers(r *Repository) {
 	Repo = r
 }
