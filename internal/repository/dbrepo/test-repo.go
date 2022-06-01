@@ -1,12 +1,27 @@
 package dbrepo
 
 import (
+	"errors"
 	"github.com/amiranbari/Royal-hotel/internal/models"
 	"time"
 )
 
 func (m *testDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]models.Room, error) {
 	var rooms []models.Room
+	if end.Format("2006-01-02") == "2050-01-03" {
+		return rooms, errors.New("Some error ...")
+	}
+	if end.Format("2006-01-02") == "2050-01-05" {
+		rooms = []models.Room{
+			{
+				1,
+				"test-room",
+				time.Now(),
+				time.Now(),
+				3500,
+			},
+		}
+	}
 	return rooms, nil
 }
 

@@ -107,7 +107,6 @@ func getRoutes() http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
-	mux.Use(NoServe)
 	mux.Use(SessionLoad)
 
 	mux.Get("/", Repo.Index)

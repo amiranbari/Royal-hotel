@@ -49,12 +49,11 @@ func (m *Repository) Index(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) SearchForRoom(rw http.ResponseWriter, r *http.Request) {
-
 	err := r.ParseForm()
 
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "form is not valid!")
-		http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
+		http.Redirect(rw, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -62,7 +61,7 @@ func (m *Repository) SearchForRoom(rw http.ResponseWriter, r *http.Request) {
 	form.Required("start_date", "end_date")
 	if !form.Valid() {
 		m.App.Session.Put(r.Context(), "error", "start date and end date required!")
-		http.Redirect(rw, r, "/", http.StatusTemporaryRedirect)
+		http.Redirect(rw, r, "/", http.StatusSeeOther)
 		return
 	}
 
